@@ -2,29 +2,20 @@ FROM php:7.2
 
 MAINTAINER Szymon Bluma <szbluma@gmail.com>
 
-RUN apt-get update > /dev/null && apt-get install -y --no-install-recommends \
-    apt-utils \
-    git \
-    unzip \
-    libfreetype6-dev \
-    libjpeg62-turbo-dev \
-    libmcrypt-dev \
-    libpng-dev \
-    zlib1g-dev \
+RUN apt-get update && apt-get install -y \
     libicu-dev \
-    jpegoptim \
-    g++ \
-    libxrender1 \
-    libfontconfig \
-    nano > /dev/null \
-    && docker-php-ext-install pdo_mysql gd > /dev/null
+    libpng-dev jpegoptim \
+    git mc vim
 
-RUN pecl install mcrypt-1.0.1 > /dev/null && \
-    docker-php-ext-enable mcrypt > /dev/null
+RUN docker-php-ext-install -j$(nproc) intl gd pdo_mysql
+
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN pecl install redis
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer > /dev/null
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && composer --version
 
-COPY entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php", "-a"]
+# Set timezone
+RUN rm /etc/localtime \
+  && ln -s /usr/share/zoneinfo/Europe/Warsaw /etc/localtime \
+  && "date"
