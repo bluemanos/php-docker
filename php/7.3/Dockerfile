@@ -9,8 +9,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-install -j$(nproc) intl gd pdo_mysql
 
-RUN pecl install xdebug && docker-php-ext-enable xdebug
 RUN pecl install redis
+RUN pecl install xdebug-2.7.0beta1
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && composer --version
