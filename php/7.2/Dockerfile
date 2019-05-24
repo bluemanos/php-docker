@@ -3,14 +3,14 @@ FROM php:7.2
 MAINTAINER Szymon Bluma <szbluma@gmail.com>
 
 RUN apt-get update && apt-get install -y \
-    libicu-dev \
+    libicu-dev libmcrypt-dev libzip-dev libbz2-dev \
     libpng-dev jpegoptim \
-    git mc vim
+    unzip git mc vim
 
-RUN docker-php-ext-install -j$(nproc) intl gd pdo_mysql
+RUN docker-php-ext-install -j$(nproc) intl gd pdo_mysql zip bz2
 
-RUN pecl install xdebug && docker-php-ext-enable xdebug
 RUN pecl install redis
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && composer --version
