@@ -4,10 +4,12 @@ MAINTAINER Szymon Bluma <szbluma@gmail.com>
 
 RUN apt-get update && apt-get install -y \
     libicu-dev libmcrypt-dev libzip-dev libbz2-dev \
-    libpng-dev jpegoptim \
-    unzip git mc vim
+    libpng-dev jpegoptim libfreetype6-dev libjpeg62-turbo-dev libgmp-dev \
+    libwebp-dev \
+    unzip git
 
-RUN docker-php-ext-install -j$(nproc) intl gd pdo_mysql zip bz2
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+RUN docker-php-ext-install -j$(nproc) gd gmp iconv intl pdo pdo_mysql zip bz2
 
 RUN pecl install redis
 RUN pecl install xdebug && docker-php-ext-enable xdebug
